@@ -1,0 +1,25 @@
+<%= turbo_frame_tag "catalogue_results" do %>
+  <% if @unavailable %>
+    <%= render "shared/components/alert/alert",
+          title: "Could not reach MusicBrainz",
+          description: "It may be rate limiting this app. Wait a moment and try again, or fill the form in by hand.",
+          variant: "warning" %>
+  <% elsif @catalogue_number.blank? %>
+  <% elsif @candidates.empty? %>
+    <%= render "shared/components/alert/alert",
+          title: "Nothing found for #{@catalogue_number}",
+          description: "Not every pressing is catalogued. Check the number against the label and the spine, then fill the form in by hand — the record is no less yours.",
+          variant: "info" %>
+  <% else %>
+    <div class="mt-4 rounded-md border border-neutral-200 p-4">
+      <p class="text-sm text-neutral-600">
+        <%= pluralize(@candidates.size, "pressing") %> carrying <span class="font-medium"><%= @catalogue_number %></span>.
+        A catalogue number names an edition, not a copy, so more than one year can share it — pick the one that matches your label.
+      </p>
+      <ul class="mt-2 divide-y divide-neutral-200">
+        <%= render partial: "catalogue_lookups/candidate",
+              collection: @candidates, as: :candidate, locals: { medium: @medium } %>
+      </ul>
+    </div>
+  <% end %>
+<% end %>

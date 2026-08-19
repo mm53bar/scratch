@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_19_183432) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_19_200000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -60,15 +60,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_19_183432) do
 
   create_table "releases", force: :cascade do |t|
     t.date "acquired_on"
+    t.string "catalogue_number"
+    t.string "country", limit: 2
     t.datetime "created_at", null: false
     t.string "edition"
     t.string "medium", null: false
+    t.string "musicbrainz_release_id"
     t.text "notes"
     t.string "path"
     t.integer "release_group_id", null: false
     t.datetime "updated_at", null: false
     t.integer "year"
+    t.index ["catalogue_number"], name: "index_releases_on_catalogue_number"
     t.index ["medium"], name: "index_releases_on_medium"
+    t.index ["musicbrainz_release_id"], name: "index_releases_on_musicbrainz_release_id", unique: true
     t.index ["path"], name: "index_releases_on_path", unique: true
     t.index ["release_group_id", "medium"], name: "index_releases_on_release_group_id_and_medium"
     t.index ["release_group_id"], name: "index_releases_on_release_group_id"

@@ -48,7 +48,22 @@ repository can be public without hiding anything.
 | `HTTP_PORT` | the port Thruster listens on. The image default of 80 cannot always be bound by a non-root user |
 | `RAILS_MAX_THREADS` | Puma threads. Browsing is read-heavy and SQLite in WAL mode handles concurrent readers well |
 | `VIPS_CONCURRENCY` | caps libvips per-image parallelism so thumbnail generation cannot starve the web server |
+| `MUSICBRAINZ_CONTACT` | optional. An address or URL sent in the `User-Agent` on catalogue lookups. MusicBrainz asks clients to identify themselves and throttles anonymous ones harder. Left out of the default on purpose: this repository is public and someone else's address is not ours to ship |
 | `TZ` | container timezone |
+
+## Adding physical media
+
+Records and CDs are the only thing here a scan cannot find, so they are typed in — but mostly not
+by hand. Every pressing carries a catalogue number on its label and usually its spine (`T-2576`,
+`PMC 7009`), and for anything pressed before barcodes it is the only identifier on the object.
+Enter it on **Add to your shelf** and the form fills itself from MusicBrainz, tracklist included.
+
+The number names an *edition*, not a copy: Capitol used `ST-2576` in 1966 and again in 1971 after
+the label changed, and territories share numbers. So a lookup lists what the number could mean and
+a person picks. It never decides.
+
+Nothing depends on it. If MusicBrainz is unreachable, rate limiting, or has never heard of the
+pressing, the form underneath still takes everything by hand.
 
 ## Local development
 

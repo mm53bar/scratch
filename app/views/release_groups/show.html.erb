@@ -18,6 +18,14 @@
           <span class="text-sm text-neutral-700"><%= release.edition %></span>
         <% end %>
         <span class="text-sm text-neutral-500"><%= pluralize(release.tracks.size, "track") %></span>
+        <% if release.catalogue_number.present? %>
+          <%# The number is how you match this entry to the object on the
+              shelf, so it belongs where you are comparing the two. %>
+          <span class="font-mono text-xs text-neutral-500"><%= release.catalogue_number %></span>
+        <% end %>
+        <% if release.country.present? %>
+          <span class="text-sm text-neutral-500"><%= release.country %></span>
+        <% end %>
         <% if release.acquired_on %>
           <span class="text-sm text-neutral-500">acquired <%= release.acquired_on.to_fs(:long) %></span>
         <% end %>

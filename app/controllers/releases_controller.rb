@@ -8,6 +8,7 @@ class ReleasesController < ApplicationController
   def new
     @release = Release.new(medium: params[:medium].presence_in(Release::MEDIA) || "vinyl",
                            release_group_id: params[:release_group_id])
+    prefill_from_lookup if params[:mbid].present?
   end
 
   def create
@@ -17,7 +18,7 @@ class ReleasesController < ApplicationController
     @release.release_group = resolve_release_group
 
     if @release.release_group&.persisted? && @release.save
-      redirect_to album_path(@release.release_group), notice: "Added to your shelf."
+      redirect_to album_path(@release.release_group), notice: import_tracks || "Added to your shelf."
     else
       render :new, status: :unprocessable_entity
     end
@@ -53,7 +54,39 @@ class ReleasesController < ApplicationController
   end
 
   def release_params
-    params.expect(release: %i[medium edition year acquired_on notes release_group_id artist_name album_title])
+    params.expect(release: %i[medium edition year acquired_on notes release_group_id artist_name
+                              album_title catalogue_number country musicbrainz_release_id])
+  end
+
+  # Fills the form from a pressing the person picked out of a lookup. The
+  # answer is already in the cache from the search that listed it, so this
+  # costs nothing beyond the first time.
+  def prefill_from_lookup
+    @candidate = CatalogueLookup.new.find(params[:mbid])
+    return if @candidate.nil?
+
+    @release.assign_attributes(@candidate.to_release_attributes)
+    @release.artist_name = @candidate.artist_name
+    @release.album_title = @candidate.title
+  rescue CatalogueLookup::Unavailable
+    # The form still works; it just starts empty.
+    flash.now[:alert] = "Could not reach MusicBrainz — fill this in by hand."
+  end
+
+  # The tracklist is what makes one pressing worth telling apart from another:
+  # a US Revolver has eleven tracks where the UK one has fourteen. Fetched
+  # after the save so a lookup that has gone away cannot cost someone the entry
+  # they just typed.
+  def import_tracks
+    return if @release.musicbrainz_release_id.blank?
+
+    candidate = CatalogueLookup.new.find(@release.musicbrainz_release_id)
+    return if candidate.nil? || candidate.tracks.empty?
+
+    @release.replace_tracks(candidate.tracks)
+    "Added to your shelf, with #{helpers.pluralize(candidate.tracks.size, "track")}."
+  rescue CatalogueLookup::Unavailable
+    "Added to your shelf. The tracklist could not be fetched."
   end
 
   # Either attach to an album already known, or create the artist and album on

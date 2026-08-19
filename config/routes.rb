@@ -25,5 +25,8 @@ Rails.application.routes.draw do
   # Physical media is entered by hand — it is the only data here that a library
   # scan cannot rebuild, because a record on a shelf leaves no file behind.
   resources :releases, only: %i[new create edit update destroy]
+  # A record pressed before barcodes carries a catalogue number and nothing
+  # else machine-readable, so that number is the way in.
+  resource :catalogue_lookup, only: :show, controller: "catalogue_lookups"
   get "shelf", to: "shelf#show", as: :shelf
 end

@@ -74,4 +74,104 @@ class ReleasesControllerTest < ActionDispatch::IntegrationTest
     end
     assert ReleaseGroup.exists?(release_groups(:low_tide).id)
   end
+
+  # --- Adding a record by its catalogue number -------------------------------
+
+  test "the new form offers a lookup before asking anyone to type" do
+    get new_release_path
+
+    assert_response :success
+    assert_select "form[action=?]", catalogue_lookup_path
+    assert_select "turbo-frame#catalogue_results"
+  end
+
+  test "picking a pressing prefills the form" do
+    get new_release_path(mbid: "11111111-1111-4111-8111-111111111111")
+
+    assert_response :success
+    assert_select "input[name=?][value=?]", "release[catalogue_number]", "HL-1042"
+    assert_select "input[name=?][value=?]", "release[country]", "GB"
+    assert_select "input[name=?][value=?]", "release[year]", "1998"
+    assert_select "input[name=?][value=?]", "release[artist_name]", "Harbour Lights"
+    assert_select "input[name=?][value=?]", "release[album_title]", "Low Tide"
+    assert_select "input[name=?][value=?]", "release[musicbrainz_release_id]",
+                  "11111111-1111-4111-8111-111111111111"
+  end
+
+  test "a prefilled form saves nothing on its own" do
+    assert_no_difference [ "Release.count", "Artist.count" ] do
+      get new_release_path(mbid: "11111111-1111-4111-8111-111111111111")
+    end
+  end
+
+  test "a lookup that fails still gives a usable form" do
+    CatalogueLookup.transport = FakeCatalogueTransport.new(raise_with: "rate limited")
+
+    get new_release_path(mbid: "11111111-1111-4111-8111-111111111111")
+
+    assert_response :success
+    assert_select "input[name=?]", "release[artist_name]"
+    assert_match "fill this in by hand", response.body
+  end
+
+  test "saving an identified pressing brings its tracklist with it" do
+    assert_difference "Release.count", 1 do
+      post releases_path, params: { release: {
+        medium: "vinyl", artist_name: "Harbour Lights", album_title: "Low Tide",
+        year: 1998, catalogue_number: "HL-1042", country: "GB",
+        musicbrainz_release_id: "11111111-1111-4111-8111-111111111111"
+      } }
+    end
+
+    release = Release.order(:created_at).last
+    assert_equal "HL-1042", release.catalogue_number
+    assert_equal "GB", release.country
+    assert release.identified?
+
+    # The tracklist is the point: it is what makes one pressing of an album
+    # distinguishable from another in the collection.
+    assert_equal 4, release.tracks.count
+    assert_equal [ "Slack Water", "Harbour Wall", "Ebb", "Spring Tide" ], release.tracks.in_order.pluck(:title)
+    assert_equal [ 1, 1, 2, 2 ], release.tracks.in_order.pluck(:disc)
+    assert_equal 214, release.tracks.in_order.first.duration_seconds
+  end
+
+  test "a tracklist that cannot be fetched does not cost someone the entry" do
+    CatalogueLookup.transport = FakeCatalogueTransport.new(raise_with: "rate limited")
+
+    assert_difference "Release.count", 1 do
+      post releases_path, params: { release: {
+        medium: "vinyl", artist_name: "Harbour Lights", album_title: "Low Tide",
+        musicbrainz_release_id: "11111111-1111-4111-8111-111111111111"
+      } }
+    end
+
+    assert_equal 0, Release.order(:created_at).last.tracks.count
+    follow_redirect!
+    assert_match "tracklist could not be fetched", response.body
+  end
+
+  test "typing it all in by hand still works" do
+    assert_difference "Release.count", 1 do
+      post releases_path, params: { release: {
+        medium: "cd", artist_name: "The Ordinary Signals", album_title: "Paper Streets", year: 2004
+      } }
+    end
+
+    release = Release.order(:created_at).last
+    assert_nil release.catalogue_number
+    assert_not release.identified?
+  end
+
+  test "the same pressing cannot be shelved twice" do
+    2.times do
+      post releases_path, params: { release: {
+        medium: "vinyl", artist_name: "Harbour Lights", album_title: "Low Tide",
+        musicbrainz_release_id: "11111111-1111-4111-8111-111111111111"
+      } }
+    end
+
+    assert_response :unprocessable_entity
+    assert_equal 1, Release.where(musicbrainz_release_id: "11111111-1111-4111-8111-111111111111").count
+  end
 end

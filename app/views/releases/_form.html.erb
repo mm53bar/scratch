@@ -6,6 +6,14 @@
           variant: "error" %>
   <% end %>
 
+  <% if @release.musicbrainz_release_id.present? %>
+    <%= f.hidden_field :musicbrainz_release_id %>
+    <p class="rounded-md bg-green-50 px-3 py-2 text-sm text-green-800">
+      Filled in from catalogue number <span class="font-medium"><%= @release.catalogue_number %></span><%= " · #{@candidate.description}" if @candidate %>.
+      Change anything that does not match the record in your hands.
+    </p>
+  <% end %>
+
   <% if @release.new_record? %>
     <% if @release.release_group_id.present? %>
       <%= f.hidden_field :release_group_id %>
@@ -49,6 +57,20 @@
       <%= f.label :year, class: "block text-sm font-medium" %>
       <%= f.number_field :year, min: 1900, max: Date.current.year + 1,
             class: "mt-1 w-full rounded-md border border-neutral-300 px-3 py-2" %>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <%= f.label :catalogue_number, "Catalogue number", class: "block text-sm font-medium" %>
+      <%= f.text_field :catalogue_number, placeholder: "T-2576",
+            class: "mt-1 w-full rounded-md border border-neutral-300 px-3 py-2" %>
+    </div>
+    <div>
+      <%= f.label :country, class: "block text-sm font-medium" %>
+      <%= f.text_field :country, maxlength: 2, placeholder: "US",
+            class: "mt-1 w-full rounded-md border border-neutral-300 px-3 py-2 uppercase" %>
+      <p class="mt-1 text-xs text-neutral-500">Pressings in different territories can share a number.</p>
     </div>
   </div>
 

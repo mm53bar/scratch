@@ -1,0 +1,13 @@
+<%# One pressing from a lookup. Picking it leaves the frame and reloads the
+    whole form prefilled, which is why the link targets _top. %>
+<li class="py-3">
+  <%= link_to new_release_path(mbid: candidate.musicbrainz_release_id, medium: medium),
+        data: { turbo_frame: "_top" },
+        class: "group flex items-baseline gap-x-3 gap-y-1 flex-wrap hover:bg-neutral-50 -mx-2 px-2 py-1 rounded" do %>
+    <span class="w-12 shrink-0 text-sm tabular-nums text-neutral-500"><%= year_or_dash(candidate.year) %></span>
+    <span class="font-medium group-hover:underline"><%= candidate.title %></span>
+    <span class="text-sm text-neutral-500"><%= candidate.artist_name %></span>
+    <span class="ml-auto text-sm text-neutral-400 group-hover:text-neutral-600">Use this →</span>
+    <p class="w-full text-xs text-neutral-500"><%= candidate.description %></p>
+  <% end %>
+</li>
