@@ -12,10 +12,15 @@ namespace :covers do
 
     groups.find_each.with_index(1) do |group, index|
       ReleaseGroup::COVER_VARIANTS.each do |variant|
-        next if group.cover.variant(variant).send(:processed?)
-
-        group.cover.variant(variant).processed
+        # Symbol, not String: named variants are keyed by symbol, and a string
+        # falls through to being read as a transformation hash.
+        # .processed is idempotent — it returns an existing variant untouched —
+        # so there is nothing to check first.
+        group.cover.variant(variant.to_sym).processed
         built += 1
+      rescue StandardError => e
+        # One unreadable cover should not stop the other hundred and sixty.
+        warn "\n  #{group.artist.name} — #{group.title}: #{e.class}: #{e.message}"
       end
       print "\r  #{index}/#{total} albums, #{built} variants built" if (index % 5).zero?
     end
