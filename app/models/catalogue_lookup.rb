@@ -54,7 +54,7 @@ class CatalogueLookup
     return nil unless id.match?(/\A[0-9a-f-]{36}\z/i)
 
     body = cached("release/#{id}", RELEASE_TTL) do
-      @transport.get("release/#{id}", inc: "labels+recordings+artist-credits")
+      @transport.get("release/#{id}", inc: "labels+recordings+artist-credits+annotation+url-rels")
     end
     return nil if body.blank?
 

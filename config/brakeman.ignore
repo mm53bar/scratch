@@ -1,0 +1,9 @@
+{
+  "ignored_warnings": [
+    {
+      "fingerprint": "807456afc9774c3baa06dda6ac44cf8013a6dc94086997b70015605604c671c1",
+      "note": "The href is a Discogs URL from a MusicBrainz relation, and MusicBrainz relations are editable by anyone, so the concern is real. It is handled at the boundary instead: CatalogueLookup::Candidate.web_url parses the value and returns nil unless it is URI::HTTP with a host, so javascript: and data: URLs never reach a Candidate. Brakeman cannot follow that through the Data object. Covered by catalogue_lookup_test.rb, 'a link that is not a web address never reaches an href'."
+    }
+  ],
+  "brakeman_version": "8.0.6"
+}

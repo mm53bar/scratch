@@ -15,4 +15,13 @@ class CatalogueLookupsController < ApplicationController
     @candidates = []
     @unavailable = true
   end
+
+  # What tells two pressings of the same catalogue number apart. MusicBrainz
+  # keeps this in a free-text annotation, which is sparse — one pressing in
+  # four had one — so the Discogs link matters as much as the text.
+  def details
+    @candidate = CatalogueLookup.new.find(params[:mbid])
+  rescue CatalogueLookup::Unavailable
+    @unavailable = true
+  end
 end

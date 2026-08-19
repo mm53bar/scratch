@@ -28,5 +28,9 @@ Rails.application.routes.draw do
   # A record pressed before barcodes carries a catalogue number and nothing
   # else machine-readable, so that number is the way in.
   resource :catalogue_lookup, only: :show, controller: "catalogue_lookups"
+  # Fetched on request rather than with the list: it costs a call per pressing,
+  # and it is only wanted when two candidates look alike.
+  get "catalogue_lookup/pressing/:mbid", to: "catalogue_lookups#details",
+      as: :catalogue_pressing, constraints: { mbid: /[0-9a-fA-F-]{36}/ }
   get "shelf", to: "shelf#show", as: :shelf
 end

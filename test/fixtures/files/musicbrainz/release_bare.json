@@ -62,15 +62,5 @@
         }
       ]
     }
-  ],
-  "annotation": "Tidal Records contract pressing. Labels without the rim address.\nMatrix / Runout (Label A): HL-X-1-1042\nMatrix / Runout (Runout A etched): HL1-1042-A AudioMatrix",
-  "relations": [
-    {
-      "type": "discogs",
-      "target-type": "url",
-      "url": {
-        "resource": "https://example.com/release/1042"
-      }
-    }
   ]
 }

@@ -1,13 +1,21 @@
 <%# One pressing from a lookup. Picking it leaves the frame and reloads the
     whole form prefilled, which is why the link targets _top. %>
 <li class="py-3">
-  <%= link_to new_release_path(mbid: candidate.musicbrainz_release_id, medium: medium),
-        data: { turbo_frame: "_top" },
-        class: "group flex items-baseline gap-x-3 gap-y-1 flex-wrap hover:bg-neutral-50 -mx-2 px-2 py-1 rounded" do %>
+  <div class="flex items-baseline gap-x-3 gap-y-1 flex-wrap">
     <span class="w-12 shrink-0 text-sm tabular-nums text-neutral-500"><%= year_or_dash(candidate.year) %></span>
-    <span class="font-medium group-hover:underline"><%= candidate.title %></span>
+    <span class="font-medium"><%= candidate.title %></span>
     <span class="text-sm text-neutral-500"><%= candidate.artist_name %></span>
-    <span class="ml-auto text-sm text-neutral-400 group-hover:text-neutral-600">Use this →</span>
-    <p class="w-full text-xs text-neutral-500"><%= candidate.description %></p>
+    <%= link_to "Use this \u2192", new_release_path(mbid: candidate.musicbrainz_release_id, medium: medium),
+          data: { turbo_frame: "_top" },
+          class: "ml-auto text-sm font-medium text-neutral-700 hover:underline" %>
+  </div>
+  <p class="mt-0.5 text-xs text-neutral-500"><%= candidate.description %></p>
+
+  <%# Loaded on click, not with the list: one pressing is one more request to
+      MusicBrainz, and it is only wanted when two candidates look alike. %>
+  <%= turbo_frame_tag dom_id_for_pressing(candidate) do %>
+    <%= link_to "Pressing details",
+          catalogue_pressing_path(candidate.musicbrainz_release_id),
+          class: "mt-1 inline-block text-xs text-neutral-500 underline hover:text-neutral-800" %>
   <% end %>
 </li>

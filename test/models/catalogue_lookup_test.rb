@@ -66,6 +66,33 @@ class CatalogueLookupTest < ActiveSupport::TestCase
     assert_equal "Ebb", candidate.tracks.third[:title]
   end
 
+  test "carries the annotation and the Discogs link" do
+    candidate = CatalogueLookup.new.find("11111111-1111-4111-8111-111111111111")
+
+    assert candidate.details?
+    assert_match "HL-X-1-1042", candidate.annotation
+    assert_equal "https://example.com/release/1042", candidate.discogs_url
+  end
+
+  test "a link that is not a web address never reaches an href" do
+    # MusicBrainz relations are editable by anyone, and this one is rendered
+    # as a link, so the scheme is checked rather than trusted.
+    assert_nil CatalogueLookup::Candidate.web_url("javascript:alert(1)")
+    assert_nil CatalogueLookup::Candidate.web_url("data:text/html,<script>")
+    assert_nil CatalogueLookup::Candidate.web_url("//evil.example.com")
+    assert_nil CatalogueLookup::Candidate.web_url("not a url")
+    assert_equal "https://example.com/r/1", CatalogueLookup::Candidate.web_url("https://example.com/r/1")
+  end
+
+  test "a pressing with nothing further says so rather than looking broken" do
+    transport = FakeCatalogueTransport.new(release: "release_bare")
+    candidate = CatalogueLookup.new(transport:).find("11111111-1111-4111-8111-111111111111")
+
+    assert_not candidate.details?
+    assert_nil candidate.annotation
+    assert_nil candidate.discogs_url
+  end
+
   test "refuses anything that is not an identifier without asking" do
     transport = FakeCatalogueTransport.new
 

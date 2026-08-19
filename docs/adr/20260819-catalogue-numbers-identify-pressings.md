@@ -42,6 +42,16 @@ unchanged when MusicBrainz is unreachable, rate limiting, or has never heard of 
 - **`musicbrainz_release_id` is unique**, so the same pressing cannot be shelved twice. Two copies
   of the same pressing are a quantity, not two rows; if that ever needs representing, it needs a
   column, not a duplicate.
+- **What separates two pressings is in MusicBrainz's free-text `annotation`, and it is sparse.**
+  Of the four pressings carrying `T 2576`, one had an annotation — and that one quoted the runout
+  stamps (`Matrix / Runout (Label A): T-X-1-2576`), which is the one thing readable off the record
+  in your hands. Three of four carried a Discogs relation, which is where the rest of that detail
+  lives. Both are shown, fetched per pressing on request rather than with the list, because each
+  one is another call to a rate-limited service and they are only wanted when two candidates look
+  alike. Opening them is not wasted: the same fetch backs picking the pressing, so it is cached.
+- **Third-party URLs are checked before they become links.** Anyone can edit a MusicBrainz
+  relation. `Candidate.web_url` drops anything that is not `URI::HTTP` with a host, so a
+  `javascript:` URL never reaches an `href`.
 - Lookups are cached (a week for searches, thirty days for releases). Repeat lookups of the same
   number cost nothing, which matters because being unsure is the normal reason to look twice.
 - MusicBrainz returned `503` at one request every 1.1 seconds — inside its published limit — so
