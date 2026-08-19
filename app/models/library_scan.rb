@@ -27,10 +27,15 @@ class LibraryScan
     @logger = logger
   end
 
+  # Yields (done, total) as it goes, so something can show progress on a job
+  # that takes minutes. The scanner does not know or care what is listening;
+  # without a block it behaves exactly as it did before.
   def call
     result = Result.new(albums: 0, tracks: 0, created: 0, updated: 0, skipped: [])
+    directories = album_directories
+    yield(0, directories.size) if block_given?
 
-    album_directories.each do |dir|
+    directories.each_with_index do |dir, index|
       tracks = read_tracks(dir)
       if tracks.empty?
         result.skipped << relative(dir)
@@ -40,6 +45,10 @@ class LibraryScan
       ActiveRecord::Base.transaction { absorb(dir, tracks, result) }
       result.albums += 1
       result.tracks += tracks.size
+    ensure
+      # In the ensure so a skipped folder still advances the count — otherwise
+      # a library with unreadable folders appears to stall.
+      yield(index + 1, directories.size) if block_given?
     end
 
     @logger.info("LibraryScan: #{result}")

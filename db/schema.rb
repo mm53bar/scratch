@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_19_200000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_19_210000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -77,6 +77,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_19_200000) do
     t.index ["path"], name: "index_releases_on_path", unique: true
     t.index ["release_group_id", "medium"], name: "index_releases_on_release_group_id_and_medium"
     t.index ["release_group_id"], name: "index_releases_on_release_group_id"
+  end
+
+  create_table "scan_runs", force: :cascade do |t|
+    t.integer "albums", default: 0, null: false
+    t.integer "albums_done", default: 0, null: false
+    t.integer "albums_total"
+    t.integer "created", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.text "error"
+    t.datetime "finished_at"
+    t.json "skipped", default: [], null: false
+    t.datetime "started_at", null: false
+    t.string "status", default: "running", null: false
+    t.integer "tracks", default: 0, null: false
+    t.string "triggered_by", default: "web", null: false
+    t.integer "updated", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["started_at"], name: "index_scan_runs_on_started_at"
+    t.index ["status"], name: "index_scan_runs_on_one_running", unique: true, where: "status = 'running'"
   end
 
   create_table "tracks", force: :cascade do |t|

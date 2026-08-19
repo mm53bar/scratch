@@ -1,0 +1,33 @@
+<div class="mx-auto max-w-4xl px-4 py-8">
+  <div class="flex flex-wrap items-baseline justify-between gap-3">
+    <h1 class="text-xl font-semibold tracking-tight">Library</h1>
+    <%= button_to "Scan now", scans_path,
+          disabled: @current.present?,
+          class: "rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:bg-neutral-300" %>
+  </div>
+  <p class="mt-1 text-sm text-neutral-500">
+    Reads the tags on every file and rebuilds the digital half of the catalogue. Records and CDs on
+    your shelf are never touched — no scan can know about those.
+  </p>
+
+  <div class="mt-6">
+    <%= render "scans/status", current: @current, last: @runs.first %>
+  </div>
+
+  <% if @runs.many? %>
+    <h2 class="mt-8 text-sm font-medium text-neutral-500">Earlier scans</h2>
+    <ul class="mt-2 divide-y divide-neutral-200 border-y border-neutral-200">
+      <% @runs.drop(1).each do |run| %>
+        <li class="flex flex-wrap items-baseline gap-x-3 gap-y-1 py-2 text-sm">
+          <span class="w-32 shrink-0 text-neutral-500"><%= run.started_at.to_fs(:long) %></span>
+          <% if run.failed? %>
+            <span class="text-red-700"><%= run.error %></span>
+          <% else %>
+            <span class="text-neutral-700"><%= run.summary %></span>
+          <% end %>
+          <span class="ml-auto tabular-nums text-neutral-400"><%= run.duration %>s</span>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</div>

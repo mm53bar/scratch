@@ -33,4 +33,10 @@ Rails.application.routes.draw do
   get "catalogue_lookup/pressing/:mbid", to: "catalogue_lookups#details",
       as: :catalogue_pressing, constraints: { mbid: /[0-9a-fA-F-]{36}/ }
   get "shelf", to: "shelf#show", as: :shelf
+
+  # The digital half of the catalogue is rebuilt by scanning; this is how that
+  # is started and watched without a shell.
+  resources :scans, only: %i[index create] do
+    get "status", on: :collection
+  end
 end
