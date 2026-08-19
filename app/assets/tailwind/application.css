@@ -1,1 +1,21 @@
 @import "tailwindcss";
+
+/*
+ * Base classes the Rails Blocks components expect. Without .form-control the
+ * inputs fall back to browser defaults, which is why the search box rendered
+ * at the wrong size with its icon out of line.
+ *
+ * Only the classes the installed components actually use are here.
+ */
+@layer components {
+  .form-control {
+    @apply block w-full rounded-lg border-0 bg-white px-3 py-2 text-sm
+      text-neutral-900 shadow-xs ring-1 ring-inset ring-neutral-300
+      outline-hidden placeholder:text-neutral-500
+      focus:ring-2 focus:ring-neutral-600;
+  }
+
+  label, .label {
+    @apply text-sm font-medium text-neutral-700;
+  }
+}

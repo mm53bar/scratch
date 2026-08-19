@@ -59,4 +59,21 @@ class SearchControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-controller~=?]", "autocomplete"
     assert_select "[data-autocomplete-url-value=?]", search_suggestions_path
   end
+
+  # The component imports @floating-ui/dom. Without the pin the controller
+  # never loads and the search box silently does nothing, which is exactly how
+  # it shipped the first time.
+  test "the autocomplete javascript dependency is pinned" do
+    importmap = Rails.root.join("config/importmap.rb").read
+    assert_match(/@floating-ui\/dom/, importmap)
+    assert Rails.root.join("vendor/javascript/floating-ui--dom.js").exist?,
+           "the dependency should be vendored, not fetched from a CDN at runtime"
+  end
+
+  # Without .form-control the inputs fall back to browser defaults — wrong font
+  # size, misaligned icon.
+  test "the base component css is compiled" do
+    css = Rails.root.join("app/assets/builds/tailwind.css").read
+    assert_includes css, ".form-control"
+  end
 end
