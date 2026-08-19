@@ -1,0 +1,27 @@
+<div class="mx-auto max-w-2xl px-4 py-16">
+  <h1 class="text-2xl font-semibold tracking-tight">scratch</h1>
+  <p class="mt-2 text-neutral-600">
+    An inventory of the music you own — vinyl, CD and digital — in one place.
+  </p>
+
+  <dl class="mt-8 divide-y divide-neutral-200 border-y border-neutral-200 text-sm">
+    <div class="flex justify-between gap-4 py-3">
+      <dt class="text-neutral-500">Library path</dt>
+      <dd class="text-right"><code><%= @library_path %></code></dd>
+    </div>
+    <div class="flex justify-between gap-4 py-3">
+      <dt class="text-neutral-500">Readable</dt>
+      <dd class="text-right">
+        <% if @library_readable %>
+          <span class="text-green-700">yes</span>
+        <% else %>
+          <span class="text-red-700">no — check the mount and MUSIC_LIBRARY_PATH</span>
+        <% end %>
+      </dd>
+    </div>
+  </dl>
+
+  <p class="mt-8 text-sm text-neutral-500">
+    Nothing is catalogued yet. The scanner arrives in the next phase.
+  </p>
+</div>

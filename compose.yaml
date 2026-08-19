@@ -1,0 +1,59 @@
+# Docker Compose template.
+#
+# Copy this into your stack (plain `docker compose`, Portainer, etc.), set the
+# volume paths, the `user:` UID:GID and the secret, then deploy.
+#
+# ONE container runs both the web server and background jobs: config/puma.rb
+# boots the Solid Queue supervisor in-process whenever RAILS_ENV=production
+# (baked into the image), so there is no separate worker service.
+#
+# No authentication. Run this only somewhere that is not publicly reachable —
+# put it behind whatever your network already uses to gate internal services.
+#
+# Secrets are plain env vars, not Rails encrypted credentials, so this repo can
+# be public without committing anything real.
+
+services:
+  scratch:
+    image: ghcr.io/OWNER/scratch:latest
+    user: "1000:1000"                # UID:GID that owns the volume below
+    restart: unless-stopped
+    # `always` re-checks the registry on every `up`; use `missing` if the host
+    # has no registry auth for a private image.
+    pull_policy: always
+    volumes:
+      # SQLite databases and Active Storage blobs. They are useless apart, so
+      # this is one volume and it is backed up as one thing.
+      - /path/to/scratch/data:/rails/storage:rw
+
+      # Your music, MOUNTED READ-ONLY. This app catalogues what is on disk and
+      # never writes to it — the :ro flag is the guarantee, not good intentions.
+      - /path/to/music:/music:ro
+    ports:
+      - "3216:8080"                  # host:container
+    environment:
+      TZ: UTC
+
+      # Thruster listens here. The image default is port 80, which a non-root
+      # container user cannot always bind — set a high port rather than find
+      # out at deploy time.
+      HTTP_PORT: 8080
+
+      # Browsing shows many small cover images, each a separate request through
+      # the Active Storage proxy. Rails' default of 3 threads serialises them.
+      # Reads are what this app mostly does and SQLite in WAL mode handles
+      # concurrent readers well, so the extra threads are close to free.
+      RAILS_MAX_THREADS: 8
+
+      # libvips grabs every core for a single image by default, which lets one
+      # variant generation starve the web server on a small box.
+      VIPS_CONCURRENCY: 2
+
+      # Rails session/cookie signing key (required). Generate with:
+      #   openssl rand -hex 64
+      SECRET_KEY_BASE: replace-with-64-byte-hex
+
+      # Where the music library is mounted inside the container. Everything the
+      # app reads lives under this one root; change it only if you mount the
+      # library somewhere other than /music.
+      MUSIC_LIBRARY_PATH: /music

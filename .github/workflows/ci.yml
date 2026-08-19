@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Scan for common Rails security vulnerabilities
+        run: bin/brakeman --no-pager
+
+      - name: Scan for known vulnerabilities in gems
+        run: bin/bundler-audit --update
+
+      - name: Audit importmap for vulnerable JavaScript
+        run: bin/importmap audit
+
+      - name: Lint code for consistent style
+        run: bin/rubocop -f github
+
+      - name: Run tests
+        run: bin/rails test
