@@ -1,0 +1,43 @@
+<%# One album in a grid. The cover leads, the facts sit under it.
+
+    Locals: group (required).
+
+    The body is captured into a local first: `capture do ... end` written inline
+    as an argument binds the block to `render`, not to `capture`. %>
+<% body = capture do %>
+  <%= link_to album_path(group), class: "block h-full" do %>
+    <% if group.cover.attached? %>
+      <div class="aspect-square overflow-hidden bg-neutral-100 dark:bg-neutral-700">
+        <%= image_tag album_cover_path(group, "card"), loading: "lazy", alt: "",
+              class: "h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]" %>
+      </div>
+    <% else %>
+      <%# Physical-only albums have no cover at all — nothing scanned them in.
+          Showing the title beats showing an empty square, and keeps the grid
+          from developing holes. %>
+      <div class="flex aspect-square items-center justify-center bg-gradient-to-br from-neutral-100 to-neutral-200 p-3 dark:from-neutral-700 dark:to-neutral-800">
+        <span class="line-clamp-4 text-center text-xs font-medium text-neutral-600 dark:text-neutral-300">
+          <%= group.title %>
+        </span>
+      </div>
+    <% end %>
+
+    <div class="p-3">
+      <p class="line-clamp-2 text-sm font-medium leading-snug text-neutral-900 dark:text-white">
+        <%= group.title %>
+      </p>
+      <p class="mt-1 line-clamp-1 text-xs text-neutral-500"><%= group.artist.name %></p>
+      <div class="mt-2 flex items-center gap-1.5">
+        <span class="text-xs tabular-nums text-neutral-400"><%= year_or_dash(group.year) %></span>
+        <span class="ml-auto flex gap-1">
+          <%# The point of the app: which formats of this do you actually own. %>
+          <% group.releases.map(&:medium).uniq.sort.each do |medium| %>
+            <%= medium_badge(medium) %>
+          <% end %>
+        </span>
+      </div>
+    </div>
+  <% end %>
+<% end %>
+<%= render "shared/components/card/card",
+      padding: "none", hoverable: true, classes: "group h-full", body_content: body %>

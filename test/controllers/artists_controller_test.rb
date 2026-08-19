@@ -14,7 +14,7 @@ class ArtistsControllerTest < ActionDispatch::IntegrationTest
     get artist_path(artists(:harbour_lights))
     assert_response :success
     assert_select "h1", "Harbour Lights"
-    assert_select "a", text: "Low Tide"
+    assert_select "a[href=?] p", album_path(release_groups(:low_tide)), text: "Low Tide"
     assert_select "span", text: "vinyl"
     assert_select "span", text: "digital"
   end

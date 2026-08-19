@@ -19,7 +19,7 @@ class ReleaseGroup < ApplicationRecord
     attachable.variant :detail, resize_to_limit: [ 600, 600 ], format: :jpeg, saver: { quality: 85 }, preprocessed: true
   end
 
-  COVER_VARIANTS = %w[thumb detail].freeze
+  COVER_VARIANTS = %w[thumb card detail].freeze
 
   validates :title, presence: true, uniqueness: { scope: :artist_id }
 

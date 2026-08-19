@@ -32,6 +32,7 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     Artist.delete_all
 
     get root_path
-    assert_select "p", text: /library:scan/
+    # Scanning is a page now, not a shell command someone has to be told.
+    assert_select "p a[href=?]", scans_path, text: "Scan the library"
   end
 end
