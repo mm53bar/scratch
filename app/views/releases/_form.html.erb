@@ -1,0 +1,80 @@
+<%= form_with model: @release, class: "space-y-5 max-w-xl" do |f| %>
+  <% if @release.errors.any? %>
+    <%= render "shared/components/alert/alert",
+          title: "That could not be saved",
+          description: @release.errors.full_messages.to_sentence,
+          variant: "error" %>
+  <% end %>
+
+  <% if @release.new_record? %>
+    <% if @release.release_group_id.present? %>
+      <%= f.hidden_field :release_group_id %>
+      <p class="text-sm text-neutral-600">
+        Adding to <span class="font-medium"><%= ReleaseGroup.find(@release.release_group_id).title %></span>.
+      </p>
+    <% else %>
+      <div>
+        <%= f.label :artist_name, "Artist", class: "block text-sm font-medium" %>
+        <%= f.text_field :artist_name, required: true, list: "artist-names",
+              class: "mt-1 w-full rounded-md border border-neutral-300 px-3 py-2" %>
+        <datalist id="artist-names">
+          <% Artist.alphabetical.pluck(:name).each { |n| %><option value="<%= n %>"></option><% } %>
+        </datalist>
+      </div>
+
+      <div>
+        <%= f.label :album_title, "Album", class: "block text-sm font-medium" %>
+        <%= f.text_field :album_title, required: true,
+              class: "mt-1 w-full rounded-md border border-neutral-300 px-3 py-2" %>
+        <p class="mt-1 text-xs text-neutral-500">
+          If this album is already in your collection, use the exact title and it will join it
+          rather than creating a second entry.
+        </p>
+      </div>
+    <% end %>
+  <% end %>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <%= f.label :medium, class: "block text-sm font-medium" %>
+      <% if @release.new_record? %>
+        <%= f.select :medium, Release::MEDIA.reject { |m| m == "digital" }.map { |m| [m.upcase, m] },
+              {}, class: "mt-1 w-full rounded-md border border-neutral-300 px-3 py-2" %>
+      <% else %>
+        <p class="mt-1 py-2"><%= medium_badge(@release.medium, size: "md") %></p>
+      <% end %>
+    </div>
+
+    <div>
+      <%= f.label :year, class: "block text-sm font-medium" %>
+      <%= f.number_field :year, min: 1900, max: Date.current.year + 1,
+            class: "mt-1 w-full rounded-md border border-neutral-300 px-3 py-2" %>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <%= f.label :edition, class: "block text-sm font-medium" %>
+      <%= f.text_field :edition, placeholder: "Deluxe Edition",
+            class: "mt-1 w-full rounded-md border border-neutral-300 px-3 py-2" %>
+    </div>
+    <div>
+      <%= f.label :acquired_on, "Acquired", class: "block text-sm font-medium" %>
+      <%= f.date_field :acquired_on,
+            class: "mt-1 w-full rounded-md border border-neutral-300 px-3 py-2" %>
+    </div>
+  </div>
+
+  <div>
+    <%= f.label :notes, class: "block text-sm font-medium" %>
+    <%= f.text_area :notes, rows: 3,
+          class: "mt-1 w-full rounded-md border border-neutral-300 px-3 py-2" %>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <%= f.button type: "submit", class: "rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800" do %>
+      <%= @release.new_record? ? "Add to shelf" : "Save" %>
+    <% end %>
+    <%= link_to "Cancel", shelf_path, class: "text-sm text-neutral-600 hover:underline" %>
+  </div>
+<% end %>

@@ -17,4 +17,9 @@ Rails.application.routes.draw do
   # is precisely, the path says what a person calls it.
   resources :release_groups, path: "albums", as: :albums, only: %i[index show]
   resource :search, only: :show, controller: "search"
+
+  # Physical media is entered by hand — it is the only data here that a library
+  # scan cannot rebuild, because a record on a shelf leaves no file behind.
+  resources :releases, only: %i[new create edit update destroy]
+  get "shelf", to: "shelf#show", as: :shelf
 end

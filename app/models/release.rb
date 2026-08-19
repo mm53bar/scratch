@@ -5,6 +5,12 @@
 class Release < ApplicationRecord
   MEDIA = %w[vinyl cd digital].freeze
 
+  # Form-only. Adding a record from a shop is usually the first time this
+  # collection has heard of the artist or the album, so the form accepts them
+  # by name and the controller resolves them. Keeping them as attributes means
+  # a failed save re-renders with what was typed rather than losing it.
+  attr_accessor :artist_name, :album_title
+
   belongs_to :release_group
   has_one :artist, through: :release_group
   has_many :tracks, -> { order(:disc, :position) }, dependent: :destroy, inverse_of: :release
