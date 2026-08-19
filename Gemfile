@@ -19,6 +19,12 @@ gem "tailwindcss-rails"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 
+# Reads ID3 tags. Pure Ruby, so the image needs no extra system packages —
+# taglib-ruby would, and its current release does not build against TagLib 2.
+# The gem is ruby-mp3info but the file it provides is mp3info, so Bundler
+# needs telling or it never loads and every tag read fails with NameError.
+gem "ruby-mp3info", "~> 0.8", require: "mp3info"
+
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"
 
