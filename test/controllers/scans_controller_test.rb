@@ -108,4 +108,14 @@ class ScansControllerTest < ActionDispatch::IntegrationTest
     assert_equal "failed", dead.reload.status
     assert ScanRun.current.present?
   end
+
+  # The read-only mount is a design guarantee, so a deployment that loses the
+  # :ro flag should be visible on the page rather than merely harmless-looking.
+  test "reports whether the library is readable and writable" do
+    get scans_path
+
+    assert_select "dt", text: "Readable"
+    assert_select "dt", text: "Writable"
+    assert_select "dd", text: /read-only, as intended/
+  end
 end

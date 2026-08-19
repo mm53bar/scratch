@@ -5,8 +5,8 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     get root_path
     assert_response :success
     assert_select "h1", "Your collection"
-    assert_select "dt", text: "Albums"
-    assert_select "dt", text: "Tracks"
+    assert_select "p", text: /\d+ albums/
+    assert_select "p", text: /\d+ tracks/
   end
 
   test "breaks the collection down by medium" do
@@ -16,13 +16,13 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_select "span", text: "digital"
   end
 
-  # The read-only mount is a design guarantee, so a deployment that loses the
-  # :ro flag should be visible on the page rather than merely harmless-looking.
-  test "reports whether the library is readable and writable" do
+  test "says when the library was last scanned" do
+    ScanRun.delete_all
+    ScanRun.create!(started_at: 2.hours.ago, status: "completed", finished_at: 2.hours.ago, albums: 5)
+
     get root_path
-    assert_select "dt", text: "Readable"
-    assert_select "dt", text: "Writable"
-    assert_select "dd", text: /read-only, as intended/
+
+    assert_select "p", text: /Library scanned about 2 hours ago/
   end
 
   test "invites a scan when nothing is catalogued" do

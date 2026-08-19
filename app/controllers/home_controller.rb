@@ -1,12 +1,5 @@
 class HomeController < ApplicationController
   def index
-    @library_path = Scratch.library_root
-    @library_readable = @library_path.directory? && @library_path.readable?
-    # Surfaced deliberately: the read-only mount is a design guarantee
-    # (docs/adr/20260819-read-only-library.md), so a deployment that gets it
-    # wrong should be visible rather than merely harmless-looking.
-    @library_writable = @library_path.directory? && @library_path.writable?
-
     @counts = {
       artists: Artist.count,
       albums: ReleaseGroup.count,
@@ -14,6 +7,15 @@ class HomeController < ApplicationController
       tracks: Track.count
     }
     @by_medium = Release.group(:medium).count
-    @recent = ReleaseGroup.includes(:artist, :releases, cover_attachment: :blob).order(created_at: :desc).limit(8)
+
+    # Twelve rather than eight: it divides evenly by every column count the
+    # grid uses (2, 3, 4, 6), so the last row is never a gap-toothed remnant.
+    @recent = ReleaseGroup.includes(:artist, :releases, cover_attachment: :blob)
+                          .order(created_at: :desc).limit(12)
+
+    # When the catalogue was last rebuilt, which is the only thing on this page
+    # that goes stale. The library diagnostics moved to the Library page, where
+    # they are what the page is about rather than a footnote under the covers.
+    @last_scan = ScanRun.recent.first
   end
 end

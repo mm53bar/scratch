@@ -14,6 +14,28 @@
     <%= render "scans/status", current: @current, last: @runs.first %>
   </div>
 
+  <h2 class="mt-8 text-sm font-medium uppercase tracking-wide text-neutral-500">The library</h2>
+  <dl class="mt-2 divide-y divide-neutral-200 border-y border-neutral-200 text-sm">
+    <div class="flex flex-wrap justify-between gap-x-4 gap-y-1 py-2">
+      <dt class="text-neutral-500">Path</dt>
+      <dd class="break-all text-right"><code><%= @library_path %></code></dd>
+    </div>
+    <div class="flex flex-wrap justify-between gap-x-4 gap-y-1 py-2">
+      <dt class="text-neutral-500">Readable</dt>
+      <dd class="text-right">
+        <%= @library_readable ? tag.span("yes", class: "text-green-700") :
+              tag.span("no — check the mount and MUSIC_LIBRARY_PATH", class: "text-red-700") %>
+      </dd>
+    </div>
+    <div class="flex flex-wrap justify-between gap-x-4 gap-y-1 py-2">
+      <dt class="text-neutral-500">Writable</dt>
+      <dd class="text-right">
+        <%= @library_writable ? tag.span("yes — the library should be mounted read-only", class: "text-red-700") :
+              tag.span("no (read-only, as intended)", class: "text-green-700") %>
+      </dd>
+    </div>
+  </dl>
+
   <% if @runs.many? %>
     <h2 class="mt-8 text-sm font-medium text-neutral-500">Earlier scans</h2>
     <ul class="mt-2 divide-y divide-neutral-200 border-y border-neutral-200">

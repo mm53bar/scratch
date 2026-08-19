@@ -1,6 +1,22 @@
 @import "tailwindcss";
 
 /*
+ * Dark styling is opt-in via a .dark ancestor, not the OS setting.
+ *
+ * Tailwind v4 defaults the dark variant to prefers-color-scheme, and the
+ * Rails Blocks components ship dark: classes throughout. This app's own views
+ * do not — the body is bg-white with no dark counterpart — so on a phone set
+ * to dark mode the cards turned dark grey on a white page while everything
+ * around them stayed light.
+ *
+ * Pointing the variant at a class nothing applies makes those component
+ * classes inert, which is what "this app is light-only" should mean. Adding
+ * .dark to <html> later is all that stands between this and real dark mode,
+ * once the app's own views have been given dark counterparts.
+ */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
  * Base classes the Rails Blocks components expect. Without .form-control the
  * inputs fall back to browser defaults, which is why the search box rendered
  * at the wrong size with its icon out of line.

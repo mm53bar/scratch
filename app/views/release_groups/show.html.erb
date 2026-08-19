@@ -1,7 +1,7 @@
-<div class="mx-auto max-w-4xl px-4 py-8">
+<div class="mx-auto max-w-4xl px-4 py-6 sm:py-8">
   <div class="flex items-start gap-4">
     <%= cover_image(@release_group, variant: "detail", size: 96) %>
-    <div>
+    <div class="min-w-0">
       <p class="text-sm text-neutral-500">
         <%= link_to @release_group.artist.name, artist_path(@release_group.artist), class: "hover:underline" %>
       </p>
@@ -36,11 +36,16 @@
           <% release.tracks.each do |track| %>
             <li class="flex items-baseline gap-3 py-1.5 text-sm">
               <span class="w-8 shrink-0 text-right tabular-nums text-neutral-400"><%= track.position %></span>
-              <span><%= track.title %></span>
-              <% if track.artist_credit.present? %>
-                <span class="text-neutral-500"><%= track.artist_credit %></span>
-              <% end %>
-              <span class="ml-auto tabular-nums text-neutral-400"><%= track.duration %></span>
+              <%# min-w-0 so a long title wraps instead of pushing the duration
+                  off a phone screen — flex children default to min-width auto,
+                  which stops the text breaking at all. %>
+              <span class="min-w-0 flex-1">
+                <%= track.title %>
+                <% if track.artist_credit.present? %>
+                  <span class="text-neutral-500">— <%= track.artist_credit %></span>
+                <% end %>
+              </span>
+              <span class="shrink-0 tabular-nums text-neutral-400"><%= track.duration %></span>
             </li>
           <% end %>
         </ol>

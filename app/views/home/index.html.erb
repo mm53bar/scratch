@@ -1,57 +1,54 @@
-<div class="mx-auto max-w-4xl px-4 py-8">
-  <h1 class="text-xl font-semibold tracking-tight">Your collection</h1>
-
+<div class="mx-auto max-w-6xl px-4 py-6 sm:py-8">
   <% if @counts[:albums].zero? %>
+    <h1 class="text-xl font-semibold tracking-tight">Your collection</h1>
     <p class="mt-3 text-sm text-neutral-600">
       Nothing catalogued yet. <%= link_to "Scan the library", scans_path, class: "underline hover:text-neutral-900" %>
       to read what is on disk.
     </p>
   <% else %>
-    <dl class="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded border border-neutral-200 bg-neutral-200 sm:grid-cols-4">
-      <% { "Artists" => @counts[:artists], "Albums" => @counts[:albums],
-           "Releases" => @counts[:releases], "Tracks" => @counts[:tracks] }.each do |label, value| %>
-        <div class="bg-white px-4 py-3">
-          <dt class="text-xs uppercase tracking-wide text-neutral-500"><%= label %></dt>
-          <dd class="mt-1 text-lg font-medium tabular-nums"><%= number_with_delimiter(value) %></dd>
-        </div>
-      <% end %>
-    </dl>
+    <%# Heading and totals on one line where there is room. On a phone the
+        counts matter more than the word "collection", so they lead. %>
+    <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+      <h1 class="text-xl font-semibold tracking-tight">Your collection</h1>
+      <p class="text-sm text-neutral-500">
+        <%= number_with_delimiter(@counts[:albums]) %> albums ·
+        <%= number_with_delimiter(@counts[:artists]) %> artists ·
+        <%= number_with_delimiter(@counts[:tracks]) %> tracks
+      </p>
+    </div>
 
-    <div class="mt-4 flex flex-wrap gap-2 text-sm">
+    <%# Format chips double as the filter into the albums page, so they are
+        the one control here rather than a separate stats block above them. %>
+    <div class="mt-4 flex flex-wrap gap-2">
+      <%= link_to albums_path,
+            class: "rounded-full border border-neutral-200 px-3 py-2 text-sm text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700" do %>
+        All <span class="tabular-nums text-neutral-400"><%= @counts[:albums] %></span>
+      <% end %>
       <% Release::MEDIA.each do |medium| %>
         <%= link_to albums_path(medium: medium),
-              class: "flex items-center gap-2 rounded border border-neutral-200 px-2 py-1 hover:bg-neutral-50" do %>
+              class: "flex items-center gap-1.5 rounded-full border border-neutral-200 px-3 py-2 hover:bg-neutral-50 dark:border-neutral-700" do %>
           <%= medium_badge(medium) %>
-          <span class="tabular-nums text-neutral-600"><%= @by_medium.fetch(medium, 0) %></span>
+          <span class="text-sm tabular-nums text-neutral-500"><%= @by_medium.fetch(medium, 0) %></span>
         <% end %>
       <% end %>
     </div>
 
-    <h2 class="mt-8 text-sm font-medium uppercase tracking-wide text-neutral-500">Recently catalogued</h2>
-    <div class="mt-2 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+    <div class="mt-8 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+      <h2 class="text-sm font-medium uppercase tracking-wide text-neutral-500">Recently catalogued</h2>
+      <%= link_to "All albums →", albums_path, class: "text-sm text-neutral-500 hover:text-neutral-900 hover:underline" %>
+    </div>
+    <%# Twelve cards over a column count that always divides into it, so the
+        last row is full at every breakpoint instead of trailing off. %>
+    <div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-6">
       <%= render partial: "release_groups/card", collection: @recent, as: :group %>
     </div>
-  <% end %>
 
-  <h2 class="mt-10 text-sm font-medium uppercase tracking-wide text-neutral-500">Library</h2>
-  <dl class="mt-2 divide-y divide-neutral-200 border-y border-neutral-200 text-sm">
-    <div class="flex justify-between gap-4 py-2">
-      <dt class="text-neutral-500">Path</dt>
-      <dd class="text-right"><code><%= @library_path %></code></dd>
-    </div>
-    <div class="flex justify-between gap-4 py-2">
-      <dt class="text-neutral-500">Readable</dt>
-      <dd class="text-right">
-        <%= @library_readable ? tag.span("yes", class: "text-green-700") :
-              tag.span("no — check the mount and MUSIC_LIBRARY_PATH", class: "text-red-700") %>
-      </dd>
-    </div>
-    <div class="flex justify-between gap-4 py-2">
-      <dt class="text-neutral-500">Writable</dt>
-      <dd class="text-right">
-        <%= @library_writable ? tag.span("yes — the library should be mounted read-only", class: "text-red-700") :
-              tag.span("no (read-only, as intended)", class: "text-green-700") %>
-      </dd>
-    </div>
-  </dl>
+    <p class="mt-8 text-sm text-neutral-500">
+      <% if @last_scan&.completed? %>
+        Library scanned <%= time_ago_in_words(@last_scan.started_at) %> ago —
+      <% end %>
+      <%= link_to "scan it again", scans_path, class: "underline hover:text-neutral-900" %>
+      to pick up anything new on disk.
+    </p>
+  <% end %>
 </div>
