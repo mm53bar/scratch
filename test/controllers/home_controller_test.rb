@@ -12,4 +12,9 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_select "dt", text: "Library path"
     assert_select "dt", text: "Readable"
   end
+
+  test "reports whether the library is writable, since it should not be" do
+    get root_path
+    assert_select "dt", text: "Writable"
+  end
 end

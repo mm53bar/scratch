@@ -10,6 +10,16 @@
       <dd class="text-right"><code><%= @library_path %></code></dd>
     </div>
     <div class="flex justify-between gap-4 py-3">
+      <dt class="text-neutral-500">Writable</dt>
+      <dd class="text-right">
+        <% if @library_writable %>
+          <span class="text-red-700">yes — the library should be mounted read-only</span>
+        <% else %>
+          <span class="text-green-700">no (read-only, as intended)</span>
+        <% end %>
+      </dd>
+    </div>
+    <div class="flex justify-between gap-4 py-3">
       <dt class="text-neutral-500">Readable</dt>
       <dd class="text-right">
         <% if @library_readable %>
