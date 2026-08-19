@@ -1,0 +1,13 @@
+<div class="mx-auto max-w-4xl px-4 py-8">
+  <h1 class="text-xl font-semibold tracking-tight">Artists</h1>
+  <p class="mt-1 text-sm text-neutral-500"><%= pluralize(@artists.length, "artist") %></p>
+
+  <ul class="mt-6 divide-y divide-neutral-200 border-y border-neutral-200">
+    <% @artists.each do |artist| %>
+      <li class="flex items-baseline justify-between gap-4 py-2">
+        <%= link_to artist.name, artist_path(artist), class: "hover:underline" %>
+        <span class="text-sm text-neutral-500"><%= artist.release_groups_count %></span>
+      </li>
+    <% end %>
+  </ul>
+</div>

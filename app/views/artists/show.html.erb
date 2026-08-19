@@ -1,0 +1,17 @@
+<div class="mx-auto max-w-4xl px-4 py-8">
+  <p class="text-sm text-neutral-500"><%= link_to "Artists", artists_path, class: "hover:underline" %></p>
+  <h1 class="mt-1 text-xl font-semibold tracking-tight"><%= @artist.name %></h1>
+  <p class="mt-1 text-sm text-neutral-500"><%= pluralize(@release_groups.size, "album") %></p>
+
+  <ul class="mt-6 divide-y divide-neutral-200 border-y border-neutral-200">
+    <% @release_groups.each do |group| %>
+      <li class="flex flex-wrap items-baseline gap-x-3 gap-y-1 py-2">
+        <span class="w-12 shrink-0 text-sm tabular-nums text-neutral-500"><%= year_or_dash(group.year) %></span>
+        <%= link_to group.title, album_path(group), class: "hover:underline" %>
+        <span class="ml-auto flex gap-1">
+          <% group.releases.map(&:medium).uniq.sort.each do |medium| %><%= medium_badge(medium) %><% end %>
+        </span>
+      </li>
+    <% end %>
+  </ul>
+</div>

@@ -1,20 +1,37 @@
 require "test_helper"
 
 class HomeControllerTest < ActionDispatch::IntegrationTest
-  test "renders the landing page" do
+  test "shows collection counts" do
     get root_path
     assert_response :success
-    assert_select "h1", "scratch"
+    assert_select "h1", "Your collection"
+    assert_select "dt", text: "Albums"
+    assert_select "dt", text: "Tracks"
   end
 
-  test "reports whether the configured library path is readable" do
+  test "breaks the collection down by medium" do
     get root_path
-    assert_select "dt", text: "Library path"
+    assert_select "span", text: "vinyl"
+    assert_select "span", text: "cd"
+    assert_select "span", text: "digital"
+  end
+
+  # The read-only mount is a design guarantee, so a deployment that loses the
+  # :ro flag should be visible on the page rather than merely harmless-looking.
+  test "reports whether the library is readable and writable" do
+    get root_path
     assert_select "dt", text: "Readable"
+    assert_select "dt", text: "Writable"
+    assert_select "dd", text: /read-only, as intended/
   end
 
-  test "reports whether the library is writable, since it should not be" do
+  test "invites a scan when nothing is catalogued" do
+    Track.delete_all
+    Release.delete_all
+    ReleaseGroup.delete_all
+    Artist.delete_all
+
     get root_path
-    assert_select "dt", text: "Writable"
+    assert_select "p", text: /library:scan/
   end
 end

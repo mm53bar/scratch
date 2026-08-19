@@ -11,4 +11,10 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   root "home#index"
+
+  resources :artists, only: %i[index show]
+  # "albums" in the URL, ReleaseGroup in the code: the model name says what it
+  # is precisely, the path says what a person calls it.
+  resources :release_groups, path: "albums", as: :albums, only: %i[index show]
+  resource :search, only: :show, controller: "search"
 end

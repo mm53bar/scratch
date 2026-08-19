@@ -1,0 +1,41 @@
+<div class="mx-auto max-w-4xl px-4 py-8">
+  <p class="text-sm text-neutral-500">
+    <%= link_to @release_group.artist.name, artist_path(@release_group.artist), class: "hover:underline" %>
+  </p>
+  <h1 class="mt-1 text-xl font-semibold tracking-tight"><%= @release_group.title %></h1>
+  <p class="mt-1 text-sm text-neutral-500"><%= year_or_dash(@release_group.year) %></p>
+
+  <% @releases.each do |release| %>
+    <section class="mt-8">
+      <div class="flex flex-wrap items-baseline gap-3 border-b border-neutral-200 pb-2">
+        <%= medium_badge(release.medium) %>
+        <% if release.edition.present? %>
+          <span class="text-sm text-neutral-700"><%= release.edition %></span>
+        <% end %>
+        <span class="text-sm text-neutral-500"><%= pluralize(release.tracks.size, "track") %></span>
+        <% if release.acquired_on %>
+          <span class="text-sm text-neutral-500">acquired <%= release.acquired_on.to_fs(:long) %></span>
+        <% end %>
+      </div>
+
+      <% if release.tracks.any? %>
+        <ol class="mt-2 divide-y divide-neutral-100">
+          <% release.tracks.each do |track| %>
+            <li class="flex items-baseline gap-3 py-1.5 text-sm">
+              <span class="w-8 shrink-0 text-right tabular-nums text-neutral-400"><%= track.position %></span>
+              <span><%= track.title %></span>
+              <% if track.artist_credit.present? %>
+                <span class="text-neutral-500"><%= track.artist_credit %></span>
+              <% end %>
+              <span class="ml-auto tabular-nums text-neutral-400"><%= track.duration %></span>
+            </li>
+          <% end %>
+        </ol>
+      <% else %>
+        <p class="mt-2 text-sm text-neutral-500">
+          No track listing — physical media is catalogued by hand, and this one has not been filled in.
+        </p>
+      <% end %>
+    </section>
+  <% end %>
+</div>
