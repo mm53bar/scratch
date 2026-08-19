@@ -13,6 +13,14 @@ read the code and `docs/adr/` for the actual design.
   this app writes to, renames, moves or deletes an audio file. Tag management is a separate concern
   that lives outside this application. If a feature seems to need write access, that is a signal
   the feature belongs elsewhere.
+- **UI components come from Rails Blocks** (railsblocks.com — the operator has a Pro account; ask
+  if a component looks paywalled). They live in `app/views/shared/components/<name>/_<name>.html.erb`
+  and are rendered with `render "shared/components/badge/badge", text: ..., variant: ...`. Before
+  writing any badge, navbar, popover, switch, table or similar, check what is already here and what
+  the sibling apps have copied — do not hand-roll a component that exists. Retint to this app's
+  palette when pulling one in, and do not copy interaction JS for behaviour the page does not use.
+- **Forms are hand-rolled**, not componentised: plain `form_with` with Tailwind classes. Rails
+  Blocks is for discrete components, not form scaffolding.
 - Prefer Rails conventions over architecture-heavy patterns. Reach for a plain model, job or PORO
   before a new abstraction. No service layer; extract nouns, not verbs — `LibraryScan`, not
   `LibraryScanningService`.
