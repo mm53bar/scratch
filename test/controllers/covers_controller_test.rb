@@ -46,4 +46,20 @@ class CoversControllerTest < ActionDispatch::IntegrationTest
     assert response.headers["Content-Length"].to_i.positive?,
            "HEAD should report the byte size, got #{response.headers["Content-Length"].inspect}"
   end
+
+  test "every advertised variant can actually be served" do
+    group = release_groups(:low_tide)
+    assert group.cover.attached?
+
+    # COVER_VARIANTS is what the controller allows and what the views ask for.
+    # A name in that list with no matching variant definition passes every
+    # test that names variants individually, and 500s in production.
+    ReleaseGroup::COVER_VARIANTS.each do |variant|
+      get album_cover_path(group, variant)
+
+      assert_response :success, "#{variant} is advertised but could not be served"
+      assert_equal "image/jpeg", response.media_type
+      assert response.body.bytesize.positive?
+    end
+  end
 end

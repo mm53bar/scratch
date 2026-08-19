@@ -17,6 +17,9 @@ class ReleaseGroup < ApplicationRecord
     # is long enough to occupy every Puma thread on one unlucky page load.
     attachable.variant :thumb, resize_to_fill: [ 160, 160 ], format: :jpeg, saver: { quality: 80 }, preprocessed: true
     attachable.variant :detail, resize_to_limit: [ 600, 600 ], format: :jpeg, saver: { quality: 85 }, preprocessed: true
+    # For the grid. A card is around 200px wide, so this is the retina size —
+    # thumb is for list rows and is too small to enlarge into a card.
+    attachable.variant :card, resize_to_fill: [ 400, 400 ], format: :jpeg, saver: { quality: 78 }, preprocessed: true
   end
 
   COVER_VARIANTS = %w[thumb card detail].freeze
