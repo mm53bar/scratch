@@ -26,18 +26,37 @@ class SearchControllerTest < ActionDispatch::IntegrationTest
     assert_select "p", text: /Nothing found/
   end
 
-  # Typing submits into a Turbo Frame, so results swap without a full reload.
-  test "results live in a turbo frame that the form targets" do
-    get search_path(q: "Harbour")
-    assert_select "turbo-frame#search_results"
-    assert_select "form[data-turbo-frame=?]", "search_results"
-    assert_select "input[data-action=?]", "input->debounced-submit#submit"
+  test "suggestions are returned as JSON for the autocomplete component" do
+    get search_suggestions_path(q: "Harbour"), as: :json
+    assert_response :success
+    body = JSON.parse(response.body)
+    titles = body["suggestions"].map { |s| s["title"] }
+    assert_includes titles, "Harbour Lights"
+    assert_includes titles, "Harbour Wall"
   end
 
-  # Links inside the frame must break out of it or they would render a whole
-  # page into the results panel.
-  test "result links target the top level rather than the frame" do
-    get search_path(q: "Harbour")
-    assert_select "turbo-frame#search_results a[data-turbo-frame=?]", "_top"
+  test "each suggestion carries a url to navigate to" do
+    get search_suggestions_path(q: "Low Tide"), as: :json
+    suggestion = JSON.parse(response.body)["suggestions"].first
+    assert_equal album_path(release_groups(:low_tide)), suggestion["url"]
+    assert suggestion["subtitle"].present?
+  end
+
+  # A single character would match most of the collection and cost a query per
+  # keystroke for no useful result.
+  test "very short queries return nothing" do
+    get search_suggestions_path(q: "a"), as: :json
+    assert_equal [], JSON.parse(response.body)["suggestions"]
+  end
+
+  test "suggestion queries escape LIKE wildcards too" do
+    get search_suggestions_path(q: "%%"), as: :json
+    assert_equal [], JSON.parse(response.body)["suggestions"]
+  end
+
+  test "the search box in the nav is the autocomplete component" do
+    get root_path
+    assert_select "[data-controller~=?]", "autocomplete"
+    assert_select "[data-autocomplete-url-value=?]", search_suggestions_path
   end
 end

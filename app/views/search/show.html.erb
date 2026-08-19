@@ -1,16 +1,14 @@
 <div class="mx-auto max-w-4xl px-4 py-8">
   <h1 class="text-xl font-semibold tracking-tight">Search</h1>
+  <p class="mt-1 text-sm text-neutral-500">
+    Full results. The search box above suggests as you type and jumps straight to a match.
+  </p>
 
-  <%= form_with url: search_path, method: :get,
-        data: { controller: "debounced-submit", turbo_frame: "search_results" },
-        class: "mt-4" do |f| %>
+  <%= form_with url: search_path, method: :get, class: "mt-4" do |f| %>
     <%= f.search_field :q, value: @query, autofocus: true, autocomplete: "off",
           placeholder: "Artists, albums and tracks",
-          data: { action: "input->debounced-submit#submit" },
           class: "w-full rounded-md border border-neutral-300 px-3 py-2" %>
   <% end %>
 
-  <%= turbo_frame_tag "search_results", class: "block" do %>
-    <%= render "results" %>
-  <% end %>
+  <%= render "results" %>
 </div>

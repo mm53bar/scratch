@@ -6,7 +6,7 @@
     <ul class="mt-2 divide-y divide-neutral-100 border-y border-neutral-200">
       <% @artists.each do |artist| %>
         <li class="py-1.5">
-          <%= link_to artist.name, artist_path(artist), class: "hover:underline", data: { turbo_frame: "_top" } %>
+          <%= link_to artist.name, artist_path(artist), class: "hover:underline" %>
         </li>
       <% end %>
     </ul>
@@ -18,7 +18,7 @@
       <% @release_groups.each do |group| %>
         <li class="flex flex-wrap items-baseline gap-x-3 py-1.5">
           <span class="w-12 shrink-0 text-sm tabular-nums text-neutral-500"><%= year_or_dash(group.year) %></span>
-          <%= link_to group.title, album_path(group), class: "hover:underline", data: { turbo_frame: "_top" } %>
+          <%= link_to group.title, album_path(group), class: "hover:underline" %>
           <span class="text-sm text-neutral-500"><%= group.artist.name %></span>
           <span class="ml-auto flex gap-1">
             <% group.releases.map(&:medium).uniq.sort.each do |m| %><%= medium_badge(m) %><% end %>
@@ -37,7 +37,7 @@
           <span class="text-neutral-500"><%= track.credited_artist %></span>
           <span class="ml-auto text-neutral-500">
             <%= link_to track.release_group.title, album_path(track.release_group),
-                  class: "hover:underline", data: { turbo_frame: "_top" } %>
+                  class: "hover:underline" %>
           </span>
         </li>
       <% end %>

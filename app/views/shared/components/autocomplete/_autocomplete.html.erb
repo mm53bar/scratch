@@ -1,0 +1,105 @@
+<%
+# Autocomplete Component - Shared Partial
+#
+# A flexible autocomplete search component with support for local and remote data,
+# keyboard navigation, and customizable styling.
+#
+# @param id [String] Unique identifier for the autocomplete input
+# @param placeholder [String] Placeholder text for the input field (default: "Search...")
+# @param name [String] Name attribute for the input field (optional)
+# @param required [Boolean] Whether the input is required (default: false)
+# @param url [String] API endpoint for remote data fetching (optional)
+# @param local_data [Array<Hash>] Array of data objects for client-side filtering (optional)
+# @param search_keys [Array<String>] Object keys to search in for local data (default: ["title", "name", "label"])
+# @param min_length [Integer] Minimum characters before search triggers (default: 1)
+# @param delay [Integer] Debounce delay in milliseconds (default: 300)
+# @param max_suggestions [Integer] Maximum number of suggestions to display (default: 10)
+# @param highlight_matches [Boolean] Whether to highlight matching text (default: true)
+# @param auto_fill [Boolean] Auto-fill input on keyboard navigation (default: false)
+# @param auto_select_first [Boolean] Auto-select first suggestion (default: false)
+# @param submit_on_select [Boolean] Submit form when suggestion is selected (default: true)
+# @param search_on_focus [Boolean] Trigger search when input gains focus (default: false)
+# @param close_on_select [Boolean] Close dropdown when suggestion is selected (default: true)
+# @param free_solo [Boolean] Allow arbitrary values (default: true)
+# @param no_results_text [String] Text shown when no results found (default: "No results found")
+# @param loading_text [String] Text shown during loading (default: "Searching...")
+# @param input_class [String] Additional CSS classes for the input (optional)
+# @param results_class [String] Additional CSS classes for results container (optional)
+# @param show_search_icon [Boolean] Show search icon in input (default: true)
+# @param show_clear_button [Boolean] Show clear button (default: true)
+
+id ||= "autocomplete_#{SecureRandom.hex(4)}"
+placeholder ||= "Search..."
+name ||= nil
+required ||= false
+url ||= nil
+local_data ||= nil
+min_length ||= 1
+delay ||= 300
+max_suggestions ||= 10
+highlight_matches = local_assigns.fetch(:highlight_matches, true)
+auto_fill ||= false
+auto_select_first ||= false
+submit_on_select = local_assigns.fetch(:submit_on_select, true)
+search_on_focus ||= false
+close_on_select = local_assigns.fetch(:close_on_select, true)
+free_solo = local_assigns.fetch(:free_solo, true)
+no_results_text ||= "No results found"
+loading_text ||= "Searching..."
+show_search_icon = local_assigns.fetch(:show_search_icon, true)
+show_clear_button = local_assigns.fetch(:show_clear_button, true)
+search_keys ||= ["title", "name", "label", "subtitle", "description", "email"]
+input_class ||= ""
+results_class ||= ""
+%>
+
+<form class="relative"
+      data-controller="autocomplete"
+      <% if url.present? %>data-autocomplete-url-value="<%= url %>"<% end %>
+      <% if local_data.present? %>data-autocomplete-local-data-value="<%= local_data.to_json %>"<% end %>
+      data-autocomplete-search-keys-value="<%= search_keys.to_json %>"
+      data-autocomplete-min-length-value="<%= min_length %>"
+      data-autocomplete-delay-value="<%= delay %>"
+      data-autocomplete-max-suggestions-value="<%= max_suggestions %>"
+      data-autocomplete-highlight-matches-value="<%= highlight_matches %>"
+      data-autocomplete-auto-fill-value="<%= auto_fill %>"
+      data-autocomplete-auto-select-first-value="<%= auto_select_first %>"
+      data-autocomplete-submit-on-select-value="<%= submit_on_select %>"
+      data-autocomplete-search-on-focus-value="<%= search_on_focus %>"
+      data-autocomplete-close-on-select-value="<%= close_on_select %>"
+      data-autocomplete-free-solo-value="<%= free_solo %>"
+      data-autocomplete-no-results-text-value="<%= no_results_text %>"
+      data-autocomplete-loading-text-value="<%= loading_text %>"
+      <% if results_class.present? %>data-autocomplete-results-class-value="<%= results_class %>"<% end %>>
+
+  <div class="relative">
+    <input id="<%= id %>"
+           <% if name.present? %>name="<%= name %>"<% end %>
+           <%= "required" if required %>
+           data-autocomplete-target="input"
+           placeholder="<%= placeholder %>"
+           class="form-control <%= show_search_icon ? '!pl-9' : '' %> <%= show_clear_button ? '!pr-9' : '' %> <%= input_class %>"
+           autocomplete="off">
+
+    <% if show_search_icon %>
+      <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-2.5 top-2.5 size-5 text-neutral-400 pointer-events-none" width="20" height="20" viewBox="0 0 20 20">
+        <g fill="currentColor">
+          <path d="M16.906,17.966c-.256,0-.512-.098-.707-.293l-4.817-4.817c-.391-.391-.391-1.023,0-1.414s1.023-.391,1.414,0l4.817,4.817c.391,.391,.391,1.023,0,1.414-.195,.195-.451,.293-.707,.293Z"></path>
+          <path d="M8.5,15c-3.584,0-6.5-2.916-6.5-6.5S4.916,2,8.5,2s6.5,2.916,6.5,6.5-2.916,6.5-6.5,6.5Zm0-11c-2.481,0-4.5,2.019-4.5,4.5s2.019,4.5,4.5,4.5,4.5-2.019,4.5-4.5-2.019-4.5-4.5-4.5Z"></path>
+        </g>
+      </svg>
+    <% end %>
+
+    <% if show_clear_button %>
+      <button type="button" data-autocomplete-target="clearButton" data-action="click->autocomplete#clearInput" class="hidden absolute flex items-center justify-center size-5 right-2.5 top-2.5 rounded-full text-neutral-400 hover:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-neutral-600 dark:focus-visible:outline-neutral-200">
+        <svg xmlns="http://www.w3.org/2000/svg" class="size-3.5" width="12" height="12" viewBox="0 0 12 12"><g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" stroke="currentColor"><line x1="2.25" y1="9.75" x2="9.75" y2="2.25"></line><line x1="9.75" y1="9.75" x2="2.25" y2="2.25"></line></g></svg>
+      </button>
+    <% end %>
+  </div>
+
+  <div data-autocomplete-target="results"
+       class="small-scrollbar absolute z-50 w-full bg-white dark:bg-neutral-900 rounded-lg shadow-lg border border-neutral-200 dark:border-neutral-700 overflow-hidden hidden opacity-0 max-h-[250px] overflow-y-auto"
+       role="listbox"
+       tabindex="-1">
+  </div>
+</form>

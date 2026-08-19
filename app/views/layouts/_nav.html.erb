@@ -6,9 +6,16 @@
       <%= link_to "Albums", albums_path, class: "text-neutral-600 hover:text-neutral-900" %>
       <%= link_to "Shelf", shelf_path, class: "text-neutral-600 hover:text-neutral-900" %>
     </nav>
-    <%= form_with url: search_path, method: :get, class: "ml-auto" do |f| %>
-      <%= f.search_field :q, value: @query, placeholder: "Search", autocomplete: "off",
-            class: "w-44 rounded border border-neutral-300 px-2 py-1 text-sm" %>
-    <% end %>
+    <div class="ml-auto w-full sm:w-72">
+      <%= render "shared/components/autocomplete/autocomplete",
+            id: "collection_search",
+            placeholder: "Search your collection",
+            url: search_suggestions_path,
+            min_length: 2,
+            delay: 200,
+            max_suggestions: 12,
+            no_results_text: "Nothing in your collection matches",
+            loading_text: "Searching…" %>
+    </div>
   </div>
 </header>
