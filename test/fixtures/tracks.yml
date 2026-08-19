@@ -1,0 +1,41 @@
+# The vinyl and the digital rip of Low Tide deliberately differ in length:
+# the point of hanging tracks off a release rather than its group.
+low_tide_vinyl_1:
+  release: low_tide_vinyl
+  position: 1
+  disc: 1
+  title: Slack Water
+
+low_tide_digital_1:
+  release: low_tide_digital
+  position: 1
+  disc: 1
+  title: Slack Water
+  filename: 1 - Slack Water.mp3
+  file_format: mp3
+  byte_size: 7340032
+  duration_seconds: 214
+
+low_tide_digital_2:
+  release: low_tide_digital
+  position: 2
+  disc: 1
+  title: Harbour Wall
+  filename: 2 - Harbour Wall.mp3
+  file_format: mp3
+  byte_size: 6291456
+  duration_seconds: 187
+
+# A deluxe CD carrying a bonus track the other formats do not have.
+after_hours_cd_1:
+  release: after_hours_cd
+  position: 1
+  disc: 1
+  title: Nightporter
+
+after_hours_cd_2:
+  release: after_hours_cd
+  position: 2
+  disc: 1
+  title: Small Hours (demo)
+  artist_credit: Quiet Machines & The Ordinary Signals

@@ -1,0 +1,28 @@
+low_tide_vinyl:
+  release_group: low_tide
+  medium: vinyl
+  year: 1998
+  acquired_on: 2019-04-02
+
+low_tide_digital:
+  release_group: low_tide
+  medium: digital
+  year: 1998
+  path: Harbour Lights/1998 - Low Tide
+
+paper_streets_digital:
+  release_group: paper_streets
+  medium: digital
+  year: 2004
+  path: Harbour Lights/2004 - Paper Streets
+
+signal_fires_vinyl:
+  release_group: signal_fires
+  medium: vinyl
+  year: 1976
+
+after_hours_cd:
+  release_group: after_hours
+  medium: cd
+  edition: Deluxe Edition
+  year: 2012

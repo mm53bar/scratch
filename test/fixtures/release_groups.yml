@@ -1,0 +1,23 @@
+# Owned on vinyl and digital — the album that proves the join.
+low_tide:
+  artist: harbour_lights
+  title: Low Tide
+  year: 1998
+
+# Digital only — should appear in "missing on vinyl".
+paper_streets:
+  artist: harbour_lights
+  title: Paper Streets
+  year: 2004
+
+# Vinyl only — should appear in "missing digitally".
+signal_fires:
+  artist: the_paper_kites
+  title: Signal Fires
+  year: 1976
+
+# CD only, and the CD is a deluxe edition with more tracks than usual.
+after_hours:
+  artist: quiet_machines
+  title: After Hours
+  year: 2011

@@ -1,0 +1,14 @@
+# Invented artists and albums throughout. Nothing here is sampled from a real
+# collection: this repository is public, and a fixture file is an odd place to
+# publish someone's taste in music.
+harbour_lights:
+  name: Harbour Lights
+  sort_name: Harbour Lights
+
+the_paper_kites:
+  name: The Ordinary Signals
+  sort_name: Ordinary Signals, The
+
+quiet_machines:
+  name: Quiet Machines
+  sort_name: Quiet Machines
