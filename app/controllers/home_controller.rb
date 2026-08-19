@@ -14,6 +14,6 @@ class HomeController < ApplicationController
       tracks: Track.count
     }
     @by_medium = Release.group(:medium).count
-    @recent = ReleaseGroup.includes(:artist, :releases).order(created_at: :desc).limit(8)
+    @recent = ReleaseGroup.includes(:artist, :releases, cover_attachment: :blob).order(created_at: :desc).limit(8)
   end
 end

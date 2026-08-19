@@ -11,6 +11,10 @@
 # exist only in this database and no scan can know about them.
 class LibraryScan
   AUDIO = ".mp3"
+  # Only the names bin/tag writes and the players agree on. cover.webp is
+  # deliberately absent: Music Assistant ignores it, so if one is the only cover
+  # in a folder that folder has a problem worth seeing rather than papering over.
+  COVERS = %w[cover.jpg cover.jpeg cover.png].freeze
 
   Result = Struct.new(:albums, :tracks, :created, :updated, :skipped, keyword_init: true) do
     def to_s
@@ -119,6 +123,8 @@ class LibraryScan
     release.save!
     new_record ? result.created += 1 : result.updated += 1
 
+    attach_cover(group, dir)
+
     replace_tracks(release, tracks, artist_name)
   end
 
@@ -147,6 +153,22 @@ class LibraryScan
     # index. That is a real fault in the files, not something to paper over, so
     # keep the first and let the rest surface as a gap in the numbering.
     Track.insert_all!(rows.uniq { |r| [ r[:disc], r[:position] ] })
+  end
+
+  # Copied in rather than read from the library on each request: the library is
+  # read-only and may not be mounted, and variants must be written somewhere
+  # regardless. Re-attached only when the file actually differs, so a rescan of
+  # an unchanged library does no image work at all.
+  def attach_cover(group, dir)
+    file = COVERS.filter_map { |name| dir.join(name) }.find(&:exist?)
+    return if file.nil?
+
+    return if group.cover.attached? && group.cover.blob.byte_size == file.size
+
+    group.cover.attach(io: file.open, filename: file.basename.to_s,
+                       content_type: Marcel::MimeType.for(file))
+  rescue StandardError => e
+    @logger.warn("LibraryScan: cover failed for #{dir}: #{e.class}: #{e.message}")
   end
 
   def majority(tracks, key)

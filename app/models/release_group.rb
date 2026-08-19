@@ -8,6 +8,19 @@ class ReleaseGroup < ApplicationRecord
   has_many :releases, dependent: :destroy
   has_many :tracks, through: :releases
 
+  # The cover is copied in from the library rather than read from it on every
+  # request: the library is mounted read-only and may not be mounted at all,
+  # and variants have to be written somewhere regardless.
+  has_one_attached :cover do |attachable|
+    # preprocessed so the variant exists by the time a page asks for it. A cold
+    # variant on a NAS has been measured at 42 seconds against 32ms warm, which
+    # is long enough to occupy every Puma thread on one unlucky page load.
+    attachable.variant :thumb, resize_to_fill: [ 160, 160 ], format: :jpeg, saver: { quality: 80 }, preprocessed: true
+    attachable.variant :detail, resize_to_limit: [ 600, 600 ], format: :jpeg, saver: { quality: 85 }, preprocessed: true
+  end
+
+  COVER_VARIANTS = %w[thumb detail].freeze
+
   validates :title, presence: true, uniqueness: { scope: :artist_id }
 
   scope :alphabetical, -> { order(:title) }

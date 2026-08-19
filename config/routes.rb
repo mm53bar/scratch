@@ -15,7 +15,10 @@ Rails.application.routes.draw do
   resources :artists, only: %i[index show]
   # "albums" in the URL, ReleaseGroup in the code: the model name says what it
   # is precisely, the path says what a person calls it.
-  resources :release_groups, path: "albums", as: :albums, only: %i[index show]
+  resources :release_groups, path: "albums", as: :albums, only: %i[index show] do
+    # Stable, immutable URLs: /albums/1/cover/thumb
+    get "cover/:variant", to: "covers#show", as: :cover
+  end
   resource :search, only: :show, controller: "search"
   get "search/suggestions", to: "search#suggestions", as: :search_suggestions
 

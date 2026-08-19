@@ -1,9 +1,14 @@
 <div class="mx-auto max-w-4xl px-4 py-8">
-  <p class="text-sm text-neutral-500">
-    <%= link_to @release_group.artist.name, artist_path(@release_group.artist), class: "hover:underline" %>
-  </p>
-  <h1 class="mt-1 text-xl font-semibold tracking-tight"><%= @release_group.title %></h1>
-  <p class="mt-1 text-sm text-neutral-500"><%= year_or_dash(@release_group.year) %></p>
+  <div class="flex items-start gap-4">
+    <%= cover_image(@release_group, variant: "detail", size: 96) %>
+    <div>
+      <p class="text-sm text-neutral-500">
+        <%= link_to @release_group.artist.name, artist_path(@release_group.artist), class: "hover:underline" %>
+      </p>
+      <h1 class="mt-1 text-xl font-semibold tracking-tight"><%= @release_group.title %></h1>
+      <p class="mt-1 text-sm text-neutral-500"><%= year_or_dash(@release_group.year) %></p>
+    </div>
+  </div>
 
   <% @releases.each do |release| %>
     <section class="mt-8">

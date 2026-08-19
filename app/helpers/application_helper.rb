@@ -13,4 +13,15 @@ module ApplicationHelper
 
   # Albums without a year sort last and should say so rather than showing a gap.
   def year_or_dash(year) = year.presence || "—"
+
+  # A cover at a named size, or a neutral placeholder when the album has none.
+  def cover_image(group, variant: "thumb", size: 40, classes: nil)
+    box = "size-#{size / 4} shrink-0 rounded bg-neutral-100 object-cover"
+    if group.cover.attached?
+      image_tag album_cover_path(group, variant),
+                loading: "lazy", alt: "", class: [ box, classes ]
+    else
+      tag.div class: [ box, "ring-1 ring-inset ring-neutral-200", classes ]
+    end
+  end
 end

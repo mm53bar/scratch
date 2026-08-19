@@ -30,7 +30,8 @@
     <h2 class="mt-8 text-sm font-medium uppercase tracking-wide text-neutral-500">Recently catalogued</h2>
     <ul class="mt-2 divide-y divide-neutral-100 border-y border-neutral-200">
       <% @recent.each do |group| %>
-        <li class="flex flex-wrap items-baseline gap-x-3 py-1.5">
+        <li class="flex items-center gap-x-3 py-1.5">
+          <%= link_to album_path(group) do %><%= cover_image(group, size: 32) %><% end %>
           <span class="w-12 shrink-0 text-sm tabular-nums text-neutral-500"><%= year_or_dash(group.year) %></span>
           <%= link_to group.title, album_path(group), class: "hover:underline" %>
           <span class="text-sm text-neutral-500"><%= group.artist.name %></span>

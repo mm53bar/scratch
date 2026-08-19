@@ -10,6 +10,17 @@ Rails.application.configure do
   # SECRET_KEY_BASE_DUMMY, which is how `assets:precompile` boots the production
   # environment at image build time without a real secret.
 
+  # Thruster fronts Puma in this container, supports X-Sendfile and has it
+  # enabled by default — but Rails never sets the header unless told to, so the
+  # whole mechanism sits idle at both ends. With it set, Rack::Sendfile rewrites
+  # any response whose body responds to to_path into an empty body plus a path,
+  # and Thruster serves the file itself. Puma is released at the headers,
+  # whatever the file size.
+  #
+  # Development and test leave this unset deliberately: there is no proxy there
+  # to honour the header, and Rack::Sendfile would blank the body.
+  config.action_dispatch.x_sendfile_header = "X-Sendfile"
+
   # Code is not reloaded between requests.
   config.enable_reloading = false
 

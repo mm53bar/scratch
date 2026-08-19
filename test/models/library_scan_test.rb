@@ -106,4 +106,27 @@ class LibraryScanTest < ActiveSupport::TestCase
       assert_equal 2011, ReleaseGroup.find_by!(title: "After Hours").year
     end
   end
+
+  test "attaches the cover found in the album folder" do
+    scan
+    group = ReleaseGroup.find_by!(title: "Low Tide")
+    assert group.cover.attached?
+    assert_equal "cover.png", group.cover.filename.to_s
+  end
+
+  test "an album with no cover file simply has none" do
+    scan
+    assert_not ReleaseGroup.find_by!(title: "After Hours").cover.attached?
+  end
+
+  # Re-reading and re-processing 167 covers on every scan would make a rescan of
+  # an unchanged library far more expensive than it needs to be.
+  test "rescanning does not re-attach an unchanged cover" do
+    scan
+    group = ReleaseGroup.find_by!(title: "Low Tide")
+    blob_id = group.cover.blob.id
+
+    scan
+    assert_equal blob_id, group.reload.cover.blob.id
+  end
 end

@@ -8,6 +8,6 @@ class ArtistsController < ApplicationController
 
   def show
     @artist = Artist.find(params[:id])
-    @release_groups = @artist.release_groups.includes(:releases).chronological
+    @release_groups = @artist.release_groups.includes(:releases, cover_attachment: :blob).chronological
   end
 end
