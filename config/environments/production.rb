@@ -4,9 +4,11 @@ Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
   # Secrets come from the environment, not Rails encrypted credentials, so this
-  # repository can be public without hiding anything. SECRET_KEY_BASE is
-  # required at boot — see compose.yaml.
-  config.secret_key_base = ENV.fetch("SECRET_KEY_BASE")
+  # repository can be public without hiding anything. Rails already reads
+  # SECRET_KEY_BASE from ENV when there is no credentials file, so do not set
+  # config.secret_key_base here: a hard ENV.fetch also defeats
+  # SECRET_KEY_BASE_DUMMY, which is how `assets:precompile` boots the production
+  # environment at image build time without a real secret.
 
   # Code is not reloaded between requests.
   config.enable_reloading = false
